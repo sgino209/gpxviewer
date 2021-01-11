@@ -102,7 +102,7 @@ GPXParser.prototype.createMarker = function(point) {
         var attrlen = attributes.length;
         for(i = 0; i < attrlen; i++) {
             html += attributes.item(i).name + " = " +
-                    attributes.item(i).nodeValue + "<br>";
+                attributes.item(i).nodeValue + "<br>";
         }
 
         if(point.hasChildNodes) {
@@ -113,7 +113,7 @@ GPXParser.prototype.createMarker = function(point) {
                 if(children[i].nodeType != 1) continue;
                 if(children[i].firstChild == null) continue;
                 html += children[i].nodeName + " = " +
-                        children[i].firstChild.nodeValue + "<br>";
+                    children[i].firstChild.nodeValue + "<br>";
             }
         }
     }
@@ -133,8 +133,30 @@ GPXParser.prototype.createMarker = function(point) {
     });
 }
 
+GPXParser.prototype.getData = async function() {
+    let extention =  await this.xmlDoc.documentElement.getElementsByTagName("gpxtpx:TrackPointExtension");
+    extention = Object.values(extention).map(el => {
+        const param = el.parentElement.parentElement;
+        const timeSrc = new Date(param.getElementsByTagName('time')[0].innerHTML);
+
+        const hours =  ('0'+timeSrc.getHours()).slice(-2);
+        const minutes = ('0'+timeSrc.getMinutes()).slice(-2);
+        const seconds = ('0'+timeSrc.getSeconds()).slice(-2);
+
+        const speed = el.getElementsByTagName('gpxtpx:speed')[0].innerHTML;
+        const direction = el.getElementsByTagName('gpxtpx:direction')[0].innerHTML;
+
+        return {
+            speed,
+            direction,
+            time: `${hours}:${minutes}:${seconds}`
+        }
+    })
+    return await extention;
+}
+
 GPXParser.prototype.addTrackSegmentToMap = function(trackSegment, colour,
-        width) {
+                                                    width) {
     var trackpoints = trackSegment.getElementsByTagName("trkpt");
     if(trackpoints.length == 0) {
         return;
@@ -156,7 +178,7 @@ GPXParser.prototype.addTrackSegmentToMap = function(trackSegment, colour,
         var latdiff = lat - lastlat;
         var londiff = lon - lastlon;
         if(Math.sqrt(latdiff*latdiff + londiff*londiff)
-                > this.mintrackpointdelta) {
+            > this.mintrackpointdelta) {
             lastlon = lon;
             lastlat = lat;
             latlng = new google.maps.LatLng(lat,lon);
@@ -177,7 +199,7 @@ GPXParser.prototype.addTrackToMap = function(track, colour, width) {
     var segments = track.getElementsByTagName("trkseg");
     for(var i = 0; i < segments.length; i++) {
         var segmentlatlngbounds = this.addTrackSegmentToMap(segments[i], colour,
-                width);
+            width);
     }
 }
 
@@ -203,7 +225,7 @@ GPXParser.prototype.addRouteToMap = function(route, colour, width) {
         var latdiff = lat - lastlat;
         var londiff = lon - lastlon;
         if(Math.sqrt(latdiff*latdiff + londiff*londiff)
-                > this.mintrackpointdelta) {
+            > this.mintrackpointdelta) {
             lastlon = lon;
             lastlat = lat;
             latlng = new google.maps.LatLng(lat,lon);
@@ -232,7 +254,7 @@ GPXParser.prototype.centerAndZoom = function(trackSegment) {
 
         // Center the map and zoom on the given segment.
         var trackpoints = trackSegment.getElementsByTagName(
-                pointlist[pointtype]);
+            pointlist[pointtype]);
 
         // If the min and max are uninitialized then initialize them.
         if((trackpoints.length > 0) && (minlat == maxlat) && (minlat == 0)) {
@@ -263,8 +285,8 @@ GPXParser.prototype.centerAndZoom = function(trackSegment) {
     var centerlat = (maxlat + minlat) / 2;
 
     var bounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(minlat, minlon),
-            new google.maps.LatLng(maxlat, maxlon));
+        new google.maps.LatLng(minlat, minlon),
+        new google.maps.LatLng(maxlat, maxlon));
     this.map.setCenter(new google.maps.LatLng(centerlat, centerlon));
     this.map.fitBounds(bounds);
 }
@@ -279,11 +301,11 @@ GPXParser.prototype.centerAndZoomToLatLngBounds = function(latlngboundsarray) {
     }
 
     var centerlat = (boundingbox.getNorthEast().lat() +
-            boundingbox.getSouthWest().lat()) / 2;
+        boundingbox.getSouthWest().lat()) / 2;
     var centerlng = (boundingbox.getNorthEast().lng() +
-            boundingbox.getSouthWest().lng()) / 2;
+        boundingbox.getSouthWest().lng()) / 2;
     this.map.setCenter(new google.maps.LatLng(centerlat, centerlng),
-            this.map.getBoundsZoomLevel(boundingbox));
+        this.map.getBoundsZoomLevel(boundingbox));
 }
 
 GPXParser.prototype.addTrackpointsToMap = function() {
