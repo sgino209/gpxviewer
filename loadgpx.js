@@ -143,8 +143,8 @@ GPXParser.prototype.getData = async function() {
         const minutes = ('0'+timeSrc.getMinutes()).slice(-2);
         const seconds = ('0'+timeSrc.getSeconds()).slice(-2);
 
-        const speed = el.getElementsByTagName('gpxtpx:speed')[0].innerHTML;
-        const direction = el.getElementsByTagName('gpxtpx:direction')[0].innerHTML;
+        const speed = el.getElementsByTagName('gpxtpx:speed') ? el.getElementsByTagName('gpxtpx:speed')[0]?.innerHTML : 0;
+        const direction = el.getElementsByTagName('gpxtpx:direction') ? el.getElementsByTagName('gpxtpx:direction')[0]?.innerHTML : 0;
 
         return {
             speed,
