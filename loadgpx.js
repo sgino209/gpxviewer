@@ -134,25 +134,31 @@ GPXParser.prototype.createMarker = function(point) {
 }
 
 GPXParser.prototype.getData = async function() {
-    let extention =  await this.xmlDoc.documentElement.getElementsByTagName("gpxtpx:TrackPointExtension");
-    extention = Object.values(extention).map(el => {
-        const param = el.parentElement.parentElement;
+    const result = {};
+    let extension =  await this.xmlDoc.documentElement.getElementsByTagName("gpxtpx:TrackPointExtension");
+    for( let i = 0; i < extension.length ; i++ ) {
+        const param = extension[i].parentElement.parentElement
         const timeSrc = new Date(param.getElementsByTagName('time')[0].innerHTML);
+        const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
+        const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
 
-        const hours =  ('0'+timeSrc.getHours()).slice(-2);
-        const minutes = ('0'+timeSrc.getMinutes()).slice(-2);
-        const seconds = ('0'+timeSrc.getSeconds()).slice(-2);
+        const speed = speedId ? parseFloat(speedId[0]?.innerHTML).toFixed(4) : 0;
+        const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(4) : 0;
 
-        const speed = el.getElementsByTagName('gpxtpx:speed') ? el.getElementsByTagName('gpxtpx:speed')[0]?.innerHTML : 0;
-        const direction = el.getElementsByTagName('gpxtpx:direction') ? el.getElementsByTagName('gpxtpx:direction')[0]?.innerHTML : 0;
+        const hours =  ('0' + timeSrc.getHours()).slice(-2);
+        const minutes = ('0' + timeSrc.getMinutes()).slice(-2);
+        const seconds = ('0' + timeSrc.getSeconds()).slice(-2);
 
-        return {
+        const time_string = `${hours}:${minutes}:${seconds}`;
+        const time_key = 60 * +hours * 60 + 60 * +minutes + +seconds;
+        result[time_string] = {
             speed,
             direction,
-            time: `${hours}:${minutes}:${seconds}`
+            time: time_string,
+            time_sec: time_key
         }
-    })
-    return await extention;
+    }
+    return result;
 }
 
 GPXParser.prototype.addTrackSegmentToMap = function(trackSegment, colour,
