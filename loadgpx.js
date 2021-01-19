@@ -85,13 +85,14 @@ GPXParser.prototype.translateName = function(name) {
 
 
 GPXParser.prototype.createMarker = function(point) {
+    console.log("createMarker sourceMap: ", sourcesMap)
     var lon = parseFloat(point.getAttribute("lon"));
     var lat = parseFloat(point.getAttribute("lat"));
     var html = "";
 
     var pointElements = point.getElementsByTagName("html");
     if(pointElements.length > 0) {
-        for(i = 0; i < pointElements.item(0).childNodes.length; i++) {
+        for(let i = 0; i < pointElements.item(0).childNodes.length; i++) {
             html += pointElements.item(0).childNodes[i].nodeValue;
         }
     }
@@ -135,9 +136,14 @@ GPXParser.prototype.createMarker = function(point) {
 
 GPXParser.prototype.getData = async function() {
     const result = {};
+    const trackPoint = this.xmlDoc.documentElement.getElementsByTagName("trkpt");
     let extension =  await this.xmlDoc.documentElement.getElementsByTagName("gpxtpx:TrackPointExtension");
     for( let i = 0; i < extension.length ; i++ ) {
-        const param = extension[i].parentElement.parentElement
+        const position = {
+            lon: trackPoint[i].getAttribute('lon'),
+            lat: trackPoint[i].getAttribute('lat'),
+        };
+        const param = trackPoint[i]
         const timeSrc = new Date(param.getElementsByTagName('time')[0].innerHTML);
         const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
         const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
@@ -155,14 +161,15 @@ GPXParser.prototype.getData = async function() {
             speed,
             direction,
             time: time_string,
-            time_sec: time_key
+            time_sec: time_key,
+            time_src: timeSrc,
+            position
         }
     }
     return result;
 }
 
-GPXParser.prototype.addTrackSegmentToMap = function(trackSegment, colour,
-                                                    width) {
+GPXParser.prototype.addTrackSegmentToMap = function(trackSegment, colour, width) {
     var trackpoints = trackSegment.getElementsByTagName("trkpt");
     if(trackpoints.length == 0) {
         return;
@@ -204,8 +211,7 @@ GPXParser.prototype.addTrackSegmentToMap = function(trackSegment, colour,
 GPXParser.prototype.addTrackToMap = function(track, colour, width) {
     var segments = track.getElementsByTagName("trkseg");
     for(var i = 0; i < segments.length; i++) {
-        var segmentlatlngbounds = this.addTrackSegmentToMap(segments[i], colour,
-            width);
+        var segmentlatlngbounds = this.addTrackSegmentToMap(segments[i], colour, width);
     }
 }
 
@@ -319,6 +325,9 @@ GPXParser.prototype.addTrackpointsToMap = function() {
     for(var i = 0; i < tracks.length; i++) {
         var trk_color = this.xmlDoc.documentElement.getElementsByTagName("gpxx:DisplayColor")[i];
         if (trk_color) {
+            $(trk_color[0]).on('click', function() {
+                console.log('click')
+            })
             this.setTrackColour(trk_color.innerHTML);
         }
         this.addTrackToMap(tracks[i], this.trackcolour, this.trackwidth);
@@ -330,6 +339,10 @@ GPXParser.prototype.addWaypointsToMap = function() {
     for(var i = 0; i < waypoints.length; i++) {
         this.createMarker(waypoints[i]);
     }
+}
+
+GPXParser.prototype.addRouteFlagsToMap = function() {
+    console.log('loadgpx sources', sourcesMap);
 }
 
 GPXParser.prototype.addRoutepointsToMap = function() {
