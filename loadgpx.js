@@ -54,6 +54,7 @@ function GPXParser(xmlDoc, map) {
     this.trackwidth = 5;
     this.mintrackpointdelta = 0.0001;
     this.timeOffset = 3;
+    this.polyLineArray = [];
 }
 
 // Set the colour of the track line segements.
@@ -155,7 +156,7 @@ GPXParser.prototype.getData = async function () {
         const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
 
         const speed = speedId ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
-        const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(2) : 0;
+        const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
 
         const hours = ('0' + timeSrc.getHours()).slice(-2);
         const minutes = ('0' + timeSrc.getMinutes()).slice(-2);
@@ -212,6 +213,7 @@ GPXParser.prototype.addTrackSegmentToMap = function (trackSegment, colour, width
         strokeWeight: width,
         map: this.map
     });
+    this.polyLineArray.push(polyline)
 }
 
 GPXParser.prototype.addTrackToMap = function (track, colour, width) {
