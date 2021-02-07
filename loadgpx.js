@@ -55,6 +55,7 @@ function GPXParser(xmlDoc, map) {
     this.mintrackpointdelta = 0.0001;
     this.timeOffset = 3;
     this.polyLineArray = [];
+    this.mobileMarks = {}
 }
 
 // Set the colour of the track line segements.
@@ -151,7 +152,11 @@ GPXParser.prototype.getData = async function () {
             lat: trackPoint[i].getAttribute('lat'),
         };
         const param = trackPoint[i]
-        const timeSrc = new Date(param.getElementsByTagName('time')[0].innerHTML);
+        const timeSrc = new Date(param.getElementsByTagName('time')[0]?.innerHTML);
+
+        const desc = param.getElementsByTagName('desc')[0]?.innerHTML;
+        const color = desc?.split(',')[1].slice(0,-1);
+
         const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
         const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
 
@@ -171,6 +176,14 @@ GPXParser.prototype.getData = async function () {
             time_sec: time_key,
             time_src: timeSrc,
             position
+        }
+        if(!!color) {
+            console.log(color)
+            this.mobileMarks[time_string] = {
+                color,
+                time: time_string,
+                position
+            }
         }
     }
     return result;
