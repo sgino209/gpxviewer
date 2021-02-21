@@ -130,7 +130,12 @@ GPXParser.prototype.createMarker = function (point) {
     });
 
     google.maps.event.addListener(marker, "click", function () {
-        infowindow.open(this.map, marker);
+        if (infowindow.getMap()) {
+            infowindow.close();
+        }
+        else {
+            infowindow.open(this.map, marker);
+        }
     });
 }
 
