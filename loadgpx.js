@@ -86,7 +86,7 @@ GPXParser.prototype.translateName = function (name) {
 
 
 GPXParser.prototype.createMarker = function (point) {
-    console.log("createMarker sourceMap: ", sourcesMap)
+    //console.log("createMarker sourceMap: ", sourcesMap)
     var lon = parseFloat(point.getAttribute("lon"));
     var lat = parseFloat(point.getAttribute("lat"));
     var html = "";
@@ -148,8 +148,8 @@ GPXParser.prototype.getData = async function () {
     let extension = await this.xmlDoc.documentElement.getElementsByTagName("gpxtpx:TrackPointExtension");
     for (let i = 0; i < extension.length; i++) {
         const position = {
-            lon: trackPoint[i].getAttribute('lon'),
-            lat: trackPoint[i].getAttribute('lat'),
+            lon: parseFloat(trackPoint[i].getAttribute('lon')),
+            lat: parseFloat(trackPoint[i].getAttribute('lat')),
         };
         const param = trackPoint[i]
         const timeSrc = new Date(param.getElementsByTagName('time')[0]?.innerHTML);
@@ -314,8 +314,8 @@ GPXParser.prototype.centerAndZoom = function (trackSegment) {
     }
 
     // Center around the middle of the points
-    var centerlon = (maxlon + minlon) / 2;
-    var centerlat = (maxlat + minlat) / 2;
+    var centerlon = parseFloat((maxlon + minlon) / 2);
+    var centerlat = parseFloat((maxlat + minlat) / 2);
 
     var bounds = new google.maps.LatLngBounds(
         new google.maps.LatLng(minlat, minlon),
