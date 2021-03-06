@@ -56,6 +56,8 @@ function GPXParser(xmlDoc, map) {
     this.timeOffset = 3;
     this.polyLineArray = [];
     this.mobileMarks = {}
+    this.trkColors = [];
+    this.tracks = {};
 }
 
 // Set the colour of the track line segements.
@@ -135,7 +137,8 @@ GPXParser.prototype.createMarker = function (point) {
 }
 
 GPXParser.prototype.getData = async function () {
-    const result = {};
+    let res = []
+
     const timeOffset = this.xmlDoc.documentElement.getElementsByTagName("metadata");
     if (timeOffset[0]) {
         const desc = timeOffset[0].getElementsByTagName('desc')
@@ -144,49 +147,59 @@ GPXParser.prototype.getData = async function () {
             this.timeOffset = descInner.split("=")[1]
         }
     }
-    const trackPoint = this.xmlDoc.documentElement.getElementsByTagName("trkpt");
-    let extension = await this.xmlDoc.documentElement.getElementsByTagName("gpxtpx:TrackPointExtension");
-    for (let i = 0; i < extension.length; i++) {
-        const position = {
-            lon: trackPoint[i].getAttribute('lon'),
-            lat: trackPoint[i].getAttribute('lat'),
-        };
-        const param = trackPoint[i]
-        const timeSrc = new Date(param.getElementsByTagName('time')[0]?.innerHTML);
 
-        const desc = param.getElementsByTagName('desc')[0]?.innerHTML;
-        const color = desc?.split(',')[1].slice(0,-1);
+    const trk = this.xmlDoc.documentElement.getElementsByTagName("trk");
+    for (let j = 0; j < trk.length; j++) {
+        const result = {};
+        const colorTag = trk[j].getElementsByTagName("gpxx:DisplayColor")[0];
+        const colorValue = colorTag.innerHTML;
+        this.trkColors.push(colorValue);
+        const trackPoint = trk[j].getElementsByTagName("trkpt");
+        const extension = trk[j].getElementsByTagName("gpxtpx:TrackPointExtension");
+        for (let i = 0; i < extension.length; i++) {
+            const position = {
+                lon: trackPoint[i].getAttribute('lon'),
+                lat: trackPoint[i].getAttribute('lat'),
+            };
+            const param = trackPoint[i]
+            const timeSrc = new Date(param.getElementsByTagName('time')[0]?.innerHTML);
 
-        const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
-        const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
+            const desc = param.getElementsByTagName('desc')[0]?.innerHTML;
+            const color = desc?.split(',')[1].slice(0, -1);
 
-        const speed = speedId ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
-        const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
+            const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
+            const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
 
-        const hours = ('0' + timeSrc.getHours()).slice(-2);
-        const minutes = ('0' + timeSrc.getMinutes()).slice(-2);
-        const seconds = ('0' + timeSrc.getSeconds()).slice(-2);
+            const speed = speedId ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
+            const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
 
-        const time_string = `${hours}:${minutes}:${seconds}`;
-        const time_key = 60 * +hours * 60 + 60 * +minutes + +seconds;
-        result[time_string] = {
-            speed,
-            direction,
-            time: time_string,
-            time_sec: time_key,
-            time_src: timeSrc,
-            position
-        }
-        if(!!color) {
-            console.log(color)
-            this.mobileMarks[time_string] = {
-                color,
+            const hours = ('0' + timeSrc.getHours()).slice(-2);
+            const minutes = ('0' + timeSrc.getMinutes()).slice(-2);
+            const seconds = ('0' + timeSrc.getSeconds()).slice(-2);
+
+            const time_string = `${hours}:${minutes}:${seconds}`;
+            const time_key = 60 * +hours * 60 + 60 * +minutes + +seconds;
+            result[time_string] = {
+                speed,
+                direction,
                 time: time_string,
+                time_sec: time_key,
+                time_src: timeSrc,
                 position
             }
+            if (!!color) {
+                this.mobileMarks[time_string] = {
+                    color,
+                    time: time_string,
+                    position
+                }
+            }
         }
+        res.push(result)
     }
-    return result;
+    if (trainee_sel === '0') {
+        return res;
+    } else return res[0];
 }
 
 GPXParser.prototype.addTrackSegmentToMap = function (trackSegment, colour, width) {
