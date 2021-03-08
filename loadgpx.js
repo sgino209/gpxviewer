@@ -202,10 +202,7 @@ GPXParser.prototype.getData = async function () {
         }
         res.push(result)
     }
-    // Single / ALl mode results
-    if (trainee_sel === '0' || trainee_sel ==='None') {
-        return res;
-    } else return res[0];
+    return res;
 }
 
 GPXParser.prototype.addTrackSegmentToMap = function (trackSegment, colour, width) {
