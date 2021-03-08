@@ -197,7 +197,7 @@ GPXParser.prototype.getData = async function () {
         }
         res.push(result)
     }
-    if (trainee_sel === '0') {
+    if (trainee_sel === '0' || trainee_sel ==='None') {
         return res;
     } else return res[0];
 }
