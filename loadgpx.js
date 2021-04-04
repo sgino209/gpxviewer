@@ -178,9 +178,9 @@ GPXParser.prototype.getData = async function () {
             const speed = speedId ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
             const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
 
-            const hours = ('0' + timeSrc.getHours()).slice(-2);
-            const minutes = ('0' + timeSrc.getMinutes()).slice(-2);
-            const seconds = ('0' + timeSrc.getSeconds()).slice(-2);
+            const hours = ('0' + timeSrc.getUTCHours()).slice(-2);
+            const minutes = ('0' + timeSrc.getUTCMinutes()).slice(-2);
+            const seconds = ('0' + timeSrc.getUTCSeconds()).slice(-2);
 
             const time_string = `${hours}:${minutes}:${seconds}`;
             const time_key = 60 * +hours * 60 + 60 * +minutes + +seconds;
