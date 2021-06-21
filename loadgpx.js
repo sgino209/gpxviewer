@@ -58,64 +58,22 @@ function GPXParser(xmlDoc, map) {
     this.mobileMarks = {}
     this.trkColors = [];
     this.tracks = {};
-    this.markSize = parseFloat(gpx_marker_scale);
+    this.markSize = parseFloat(gpx_trainer_mark_scale);
 
     const name_prefix = 'red_triangle_';
     const name_ext = '.png';
     this.customIconPath = '/static/images';
     this.iconSizes = {
-        1: {
-            name: name_prefix + '80x72' + name_ext,
-            width: 80,
-            height: 72,
-            anchor: {x: 40, y: 36},
-            origin: {x: 0, y: 0}
-        },
-        2: {
-            name: name_prefix + '70x63' + name_ext,
-            width: 70,
-            height: 63,
-            anchor: {x: 35, y: 33},
-            origin: {x: 0, y: 0}
-        },
-        3: {
-            name: name_prefix + '60x54' + name_ext,
-            width: 60,
-            height: 54,
-            anchor: {x: 30, y: 27},
-            origin: {x: 0, y: 0}
-        },
-        4: {
-            name: name_prefix + '50x45' + name_ext,
-            width: 50,
-            height: 45,
-            anchor: {x: 25, y: 23},
-            origin: {x: 0, y: 0}
-        },
-        5: {
-            name: name_prefix + '40x36' + name_ext,
-            width: 40,
-            height: 36,
-            anchor: {x: 20, y: 18},
-            origin: {x: 0, y: 0}
-        },
-        6: {
-            name: name_prefix + '30x27' + name_ext,
-            width: 30,
-            height: 27,
-            anchor: {x: 15, y: 19},
-            origin: {x: 0, y: 0}
-        },
-        7: {
-            name: name_prefix + '26x23' + name_ext,
-            width: 26,
-            height: 23,
-            anchor: {x: 18, y: 12},
-            origin: {x: 0, y: 0}
-        },
-        8: {name: name_prefix + '20x18' + name_ext, width: 20, height: 18, anchor: {x: 10, y: 9}, origin: {x: 0, y: 0}},
-        9: {name: name_prefix + '14x13' + name_ext, width: 14, height: 13, anchor: {x: 7, y: 7}, origin: {x: 0, y: 0}},
-        10: {name: name_prefix + '8x7' + name_ext, width: 8, height: 7, anchor: {x: 4, y: 4}, origin: {x: 0, y: 0}}
+       10: {name: name_prefix + '80x72' + name_ext, width: 80, height: 72, anchor: {x: 40, y: 36}, origin: {x: 0, y: 0}},
+        9: {name: name_prefix + '70x63' + name_ext, width: 70, height: 63, anchor: {x: 35, y: 33}, origin: {x: 0, y: 0}},
+        8: {name: name_prefix + '60x54' + name_ext, width: 60, height: 54, anchor: {x: 30, y: 27}, origin: {x: 0, y: 0}},
+        7: {name: name_prefix + '50x45' + name_ext, width: 50, height: 45, anchor: {x: 25, y: 23}, origin: {x: 0, y: 0}},
+        6: {name: name_prefix + '40x36' + name_ext, width: 40, height: 36, anchor: {x: 20, y: 18}, origin: {x: 0, y: 0}},
+        5: {name: name_prefix + '30x27' + name_ext, width: 30, height: 27, anchor: {x: 15, y: 19}, origin: {x: 0, y: 0}},
+        4: {name: name_prefix + '26x23' + name_ext, width: 26, height: 23, anchor: {x: 18, y: 12}, origin: {x: 0, y: 0}},
+        3: {name: name_prefix + '20x18' + name_ext, width: 20, height: 18, anchor: {x: 10, y:  9}, origin: {x: 0, y: 0}},
+        2: {name: name_prefix + '14x13' + name_ext, width: 14, height: 13, anchor: {x:  7, y:  7}, origin: {x: 0, y: 0}},
+        1: {name: name_prefix + '8x7'   + name_ext, width: 8,  height:  7, anchor: {x:  4, y:  4}, origin: {x: 0, y: 0}}
     }
 }
 
@@ -179,7 +137,7 @@ GPXParser.prototype.createMarker = function (point) {
             }
         }
     }
-    let size = this.markSize || 6;
+    let size = this.markSize || 5;
 
     if (!this.markSize || !this.iconSizes.hasOwnProperty(size)) {
         size = 6;
