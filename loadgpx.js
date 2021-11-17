@@ -213,7 +213,10 @@ GPXParser.prototype.getData = async function () {
 
             const time_string = `${hours}:${minutes}:${seconds}`;
             const time_key = 60 * +hours * 60 + 60 * +minutes + +seconds;
+
+            const offset = 0;
             result[time_string] = {
+                index: i + offset,
                 speed,
                 direction,
                 heel,
