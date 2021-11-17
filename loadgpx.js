@@ -203,9 +203,9 @@ GPXParser.prototype.getData = async function () {
             const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
             const heelId = extension[i].getElementsByTagName('gpxtpx:heel');
 
-            const speed = speedId ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
-            const direction = directionId ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
-            const heel = heelId ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0;
+            const speed = speedId[0] ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
+            const direction = directionId[0] ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
+            const heel = heelId[0] ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0;
 
             const hours = ('0' + timeSrc.getUTCHours()).slice(-2);
             const minutes = ('0' + timeSrc.getUTCMinutes()).slice(-2);
