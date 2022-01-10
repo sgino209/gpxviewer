@@ -59,6 +59,7 @@ function GPXParser(xmlDoc, map) {
     this.trkColors = [];
     this.tracks = {};
     this.markSize = parseFloat(gpx_trainer_mark_scale);
+    this.heel_en = heel_en || 'enabled';
 
     const name_prefix = 'red_triangle_';
     const name_ext = '.png';
@@ -205,7 +206,7 @@ GPXParser.prototype.getData = async function () {
 
             const speed = speedId[0] ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
             const direction = directionId[0] ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
-            const heel = heelId[0] ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0;
+            const heel = (this.heel_en === "enabled") ? heelId[0] ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0 : 0;
 
             const hours = ('0' + timeSrc.getUTCHours()).slice(-2);
             const minutes = ('0' + timeSrc.getUTCMinutes()).slice(-2);
