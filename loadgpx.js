@@ -189,7 +189,8 @@ GPXParser.prototype.getData = async function () {
         this.trkColors.push(colorValue);
         const trackPoint = trk[j].getElementsByTagName("trkpt");
         const extension = trk[j].getElementsByTagName("gpxtpx:TrackPointExtension");
-        for (let i = 0; i < extension.length; i++) {
+        const trk_points_num = trk[j].getElementsByTagName("time").length;
+        for (let i = 0; i < trk_points_num; i++) {
             const position = {
                 lon: trackPoint[i].getAttribute('lon'),
                 lat: trackPoint[i].getAttribute('lat'),
@@ -200,14 +201,18 @@ GPXParser.prototype.getData = async function () {
             const desc = param.getElementsByTagName('desc')[0]?.innerHTML;
             const color = desc?.split(',')[1].slice(0, -1);
 
-            const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
-            const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
-            const heelId = extension[i].getElementsByTagName('gpxtpx:heel');
+            var speed = 0;
+            var direction = 0;
+            var heel = 0;
+            if (extension.length > 0) {
+                const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
+                const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
+                const heelId = extension[i].getElementsByTagName('gpxtpx:heel');
 
-            const speed = speedId[0] ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
-            const direction = directionId[0] ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
-            const heel = (this.heel_en === "enabled") ? heelId[0] ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0 : 0;
-
+                const speed = speedId[0] ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
+                const direction = directionId[0] ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
+                const heel = (this.heel_en === "enabled") ? heelId[0] ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0 : 0;
+            }
             const hours = ('0' + timeSrc.getUTCHours()).slice(-2);
             const minutes = ('0' + timeSrc.getUTCMinutes()).slice(-2);
             const seconds = ('0' + timeSrc.getUTCSeconds()).slice(-2);
