@@ -203,14 +203,17 @@ GPXParser.prototype.getData = async function () {
 
             var speed = 0;
             var direction = 0;
+            var pitch = 0;
             var heel = 0;
             if (extension.length > 0) {
                 const speedId = extension[i].getElementsByTagName('gpxtpx:speed');
                 const directionId = extension[i].getElementsByTagName('gpxtpx:direction');
+                const pitchId = extension[i].getElementsByTagName('gpxtpx:pitch');
                 const heelId = extension[i].getElementsByTagName('gpxtpx:heel');
 
                 speed = speedId[0] ? parseFloat(speedId[0]?.innerHTML).toFixed(2) : 0;
                 direction = directionId[0] ? parseFloat(directionId[0]?.innerHTML).toFixed(0) : 0;
+                pitch = pitchId[0] ? parseFloat(pitchId[0]?.innerHTML).toFixed(0) : 0;
                 heel = (this.heel_en === "enabled") ? heelId[0] ? parseFloat(heelId[0]?.innerHTML).toFixed(0) : 0 : 0;
             }
             const hours = ('0' + timeSrc.getUTCHours()).slice(-2);
@@ -225,6 +228,7 @@ GPXParser.prototype.getData = async function () {
                 index: i + offset,
                 speed,
                 direction,
+                pitch,
                 heel,
                 time: time_string,
                 time_sec: time_key,
